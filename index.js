@@ -10,7 +10,9 @@ mongoose.connect('mongodb+srv://avinya2024:ChineseShadow24@cluster0.iaxmjpi.mong
     console.log(err);
 });
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: "https://avinya2k24.netlify.app/"
+}));
 app.options('*',cors());
 app.use("/*",(req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'https://avinya2k24.netlify.app/'); // You can specify your allowed origin here
