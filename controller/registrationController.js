@@ -1,5 +1,58 @@
 const { registrationSchema } = require("../models/register");
 
+const Razorpay = require('razorpay');
+
+const razorpay = new Razorpay({
+    key_id: 'rzp_test_7p7xCTeRWyvtgf',
+    key_secret:'cPzOQNWdRDehhDx9F6Vis2EQ'
+});
+
+module.exports.order = async (req, res) => {
+    try {
+        let { amount } = req.body;
+        console.log(amount);
+
+        const order = await razorpay.orders.create({
+            amount: amount,
+            currency: "INR",
+            receipt: "rcptid_11",
+        });
+    
+        console.log("Order created:", order);
+    
+        // Now you can access the properties of the order object
+        res.json({
+            orderId: order.id,
+            razorpayKey: razorpay.key_id,
+            amount: order.amount, // This is in paise
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to create order' });
+    }
+}
+module.exports.verification = async (req, res) => {
+    try {
+        let body = req.body.response.razorpay_order_id + "|"+req.body.response.razorpay_payment_id;
+        var crypto = require('crypto');
+        var expectedSignature = crypto.createHmac('sha256','cPzOQNWdRDehhDx9F6Vis2EQ')
+        .update(body.toString()).digest('hex');
+        console.log("signature received: "+req.body.response.razorpay_signature);
+        console.log("expected siignature: "+expectedSignature)
+        var response = {
+            "signatureIsValid": "false"
+        }
+        if(expectedSignature == req.body.response.razorpay_signature){
+            response= {
+                "signatureIsValid": "true"
+            }
+            res.status(200).json({razorpay_payment_id: req.body.response.razorpay_payment_id, razorpay_signature: expectedSignature})
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to verify payment' });
+    }
+}
 module.exports.registration = async(req,res,next)=>{
     try{
         if(req.method === 'POST'){
@@ -15,14 +68,14 @@ module.exports.registration = async(req,res,next)=>{
                 return res.status(200).json({message:"Success"})
             }
             if(isValidEmail2){
-                let transactions = isValidEmail.transactionId
+                let transactions = isValidEmail2.transactionId
                 transactions.push(transactionID)
                 let amt = isValidEmail.paidAmount + paidAmount 
                 await registrationSchema.findByIdAndUpdate(isValidEmail._id,{hackathon: true, paidAmount: amt, transactionId: transactions})
                 return res.status(200).json({message:"Success"})
             }
             if(isValidEmail3){
-                let transactions = isValidEmail.transactionId
+                let transactions = isValidEmail3.transactionId
                 transactions.push(transactionID)
                 let amt = isValidEmail.paidAmount + paidAmount 
                 await registrationSchema.findByIdAndUpdate(isValidEmail._id,{hackathon: true, paidAmount: amt, transactionId: transactions})
@@ -95,18 +148,16 @@ module.exports.registration = async(req,res,next)=>{
                 let transactions = []
                 transactions.push(transactionID)
                 await registrationSchema.create({
-                    teamName: teamName,
-                    teamMembers: teamMembers,
                     teamLeaderName: teamLeaderName,
                     teamLeaderEmail: teamLeaderEmail,
                     teamLeaderPhone: teamLeaderPhone,
                     department: department,
                     college: college,
-                    hackathon: isValidEmail.hackathon,
                     exhibition: true,
-                    expert: true,
+                    techexpert: techexpert,
+                    nontechexpert: nontechexpert,
                     transactionId: transactions,
-                    paidAmount: paidAmount+isValidEmail.paidAmount
+                    paidAmount: paidAmount
                 }).then(()=>{
                     res.status(200).json({message: "Created"});
                 }).catch((err)=>{
@@ -115,24 +166,76 @@ module.exports.registration = async(req,res,next)=>{
             }
         }
         else if(req.method === 'PATCH'){
-            const {email} = req.body;
-            const isValidEmail = await registrationSchema.findOne({teamLeaderEmail: email});
-            const isValidEmail2 = await registrationSchema.findOne({member2Email: email});
-            const isValidEmail3 = await registrationSchema.findOne({member3Email: email});
-            if(isValidEmail){
-                return res.status(200).json({status: true});
-            }
-            if(isValidEmail2){
-                return res.status(200).json({status: true});
-            }
-            if(isValidEmail3){
-                return res.status(200).json({status: true});
-            }
-            else{
-                return res.status(400).json({status: false});
+            const {email, contact} = req.body;
+            if(contact === ""){
+                const isValidEmail = await registrationSchema.findOne({teamLeaderEmail: email, teamLeaderPhone:contact, hackathon: true});
+                const isValidEmail2 = await registrationSchema.findOne({member2Email: email, teamLeaderPhone:contact, hackathon: true});
+                const isValidEmail3 = await registrationSchema.findOne({member3Email: email, teamLeaderPhone:contact, hackathon: true});
+                if(isValidEmail){
+                    return res.status(200).json({status: true});
+                }
+                if(isValidEmail2){
+                    return res.status(200).json({status: true});
+                }
+                if(isValidEmail3){
+                    return res.status(200).json({status: true});
+                }
+                else{
+                    return res.status(400).json({status: false});
+                }
             }
         }
     }catch(err){
+        next(err)
+    }
+}
+module.exports.search = async(req,res,next)=>{
+    try{
+        const {email, contact} = req.body;
+            if(contact === ""){
+                let isValidEmail = await registrationSchema.findOne({teamLeaderEmail: email, techexpert: true});
+                let isValidEmail2 = await registrationSchema.findOne({member2Email: email, techexpert: true});
+                let isValidEmail3 = await registrationSchema.findOne({member3Email: email, techexpert: true});
+                if(isValidEmail){
+                    return res.status(200).json({status: true});
+                }
+                if(isValidEmail2){
+                    return res.status(200).json({status: true});
+                }
+                if(isValidEmail3){
+                    return res.status(200).json({status: true});
+                }
+                else{
+                    isValidEmail = await registrationSchema.findOne({teamLeaderEmail: email, nontechexpert: true});
+                    isValidEmail2 = await registrationSchema.findOne({member2Email: email, nontechexpert: true});
+                    isValidEmail3 = await registrationSchema.findOne({member3Email: email, nontechexpert: true});
+                    if(isValidEmail){
+                        return res.status(200).json({status: true});
+                    }
+                    if(isValidEmail2){
+                        return res.status(200).json({status: true});
+                    }
+                    if(isValidEmail3){
+                        return res.status(200).json({status: true});
+                    }
+                    return res.status(400).json({status: false});
+                }
+            }
+            if(email === ""){
+                let isValidPhone = await registrationSchema.findOne({teamLeaderPhone: contact, techexpert: true});
+                if(isValidPhone){
+                    return res.status(200).json({status: true})
+                }else{
+                    isValidPhone = await registrationSchema.findOne({teamLeaderPhone: contact, nontechexpert: true});
+                    if(isValidPhone){
+                        return res.status(200).json({status: true})
+                    }else{
+                        return res.status(200).json({status: false})
+
+                    }
+                }
+            }
+        }catch(err){
         next(err)
     }
 }

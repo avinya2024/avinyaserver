@@ -2,7 +2,8 @@ const mongoose = require('mongoose')
 const registration = new mongoose.Schema({
     teamName:{
         type: String,
-        required: false
+        required: false,
+        default: ""
     },
     teamMembers:{
         type: Number,
@@ -27,16 +28,24 @@ const registration = new mongoose.Schema({
         required: true
     },
     member2Name:{
-        type: String
+        type: String,
+        default: "",
+        required: false
     },
     member2Email:{
         type: String,
+        default: "",
+        required: false
     },
     member3Name:{
-        type: String
+        type: String,
+        default: "",
+        required: false
     },
     member3Email:{
-        type: String
+        type: String,
+        default: "",
+        required: false
     },
     department:{
         type: String,
