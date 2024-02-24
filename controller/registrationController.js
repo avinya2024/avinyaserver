@@ -182,7 +182,7 @@ module.exports.registration = async(req,res,next)=>{
             if(contact!==""){
                 const isValidPhone = await registrationSchema.findOne({teamLeaderPhone: contact, hackathon: true})
                 if(isValidPhone){
-                    return res.status(200).json({status: true})
+                    return res.status(200).json({status: false, message: "Please use the email used for hackathon registration"})
                 }
             }
             return res.status(200).json({status: false})
