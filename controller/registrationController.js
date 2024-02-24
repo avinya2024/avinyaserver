@@ -167,6 +167,7 @@ module.exports.registration = async(req,res,next)=>{
         }
         else if(req.method === 'PATCH'){
             const {email, contact} = req.body;
+            if(email!==""){
                 const isValidEmail = await registrationSchema.findOne({teamLeaderEmail: email, hackathon: true});
                 const isValidEmail2 = await registrationSchema.findOne({member2Email: email, hackathon: true});
                 const isValidEmail3 = await registrationSchema.findOne({member3Email: email, hackathon: true});
@@ -179,6 +180,7 @@ module.exports.registration = async(req,res,next)=>{
                 if(isValidEmail3){
                     return res.status(200).json({status: true});
                 }
+            }
             if(contact!==""){
                 const isValidPhone = await registrationSchema.findOne({teamLeaderPhone: contact, hackathon: true})
                 if(isValidPhone){
