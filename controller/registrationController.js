@@ -3,7 +3,7 @@ const { registrationSchema } = require("../models/register");
 const Razorpay = require('razorpay');
 const razorpay = new Razorpay({
     key_id: process.env.KEY_ID,
-    key_secret:process.env.KEY_SECRET
+    key_secret:process.envKEY_SECRET
 });
 
 module.exports.order = async (req, res) => {
@@ -34,7 +34,7 @@ module.exports.verification = async (req, res) => {
     try {
         let body = req.body.response.razorpay_order_id + "|"+req.body.response.razorpay_payment_id;
         var crypto = require('crypto');
-        var expectedSignature = crypto.createHmac('sha256',process.env.KEY_SECRET)
+        var expectedSignature = crypto.createHmac('sha256',process.envKEY_SECRET)
         .update(body.toString()).digest('hex');
         console.log("signature received: "+req.body.response.razorpay_signature);
         console.log("expected siignature: "+expectedSignature)
