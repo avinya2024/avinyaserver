@@ -1,4 +1,8 @@
 const mongoose = require('mongoose')
+const moment = require('moment')
+function getISTTimestamp() {
+    return moment().utcOffset('+0530').format();
+}
 const registration = new mongoose.Schema({
     teamName:{
         type: String,
@@ -81,6 +85,8 @@ const registration = new mongoose.Schema({
         default: 0
     }
 },{
-    timestamps: true
+    timestamps: {
+        currentTime: ()=>getISTTimestamp
+    }
 });
 module.exports.registrationSchema = mongoose.model('registrations',registration)
