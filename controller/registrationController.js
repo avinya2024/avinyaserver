@@ -85,7 +85,7 @@ module.exports.registration = async(req,res,next)=>{
                 let transactions = isValidPhone.transactionId
                 transactions.push(transactionID)
                 let amt = isValidPhone.paidAmount + paidAmount 
-                await registrationSchema.findByIdAndUpdate(isValidPhone._id,{techexpert:techexpert,nontechexpert:nontechexpert, paidAmount: amt, transactionId: transactions})
+                await registrationSchema.findByIdAndUpdate(isValidPhone._id,{hackathon:true, paidAmount: amt, transactionId: transactions})
                 return res.status(200).json({message:"Success"})
             }else{
                 let transactions = [];
