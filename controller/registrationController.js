@@ -59,6 +59,7 @@ module.exports.registration = async(req,res,next)=>{
             const isValidEmail = await registrationSchema.findOne({email: teamLeaderEmail});
             const isValidEmail2 = await registrationSchema.findOne({member2Email: member2Email});
             const isValidEmail3 = await registrationSchema.findOne({member3Email: member3Email});
+            const isValidPhone = await registrationSchema.findOne({teamLeaderPhone: teamLeaderPhone});
             if(isValidEmail && teamLeaderEmail != ""){
                 let transactions = isValidEmail.transactionId
                 transactions.push(transactionID)
@@ -80,9 +81,12 @@ module.exports.registration = async(req,res,next)=>{
                 await registrationSchema.findByIdAndUpdate(isValidEmail3._id,{hackathon: true, paidAmount: amt, transactionId: transactions})
                 return res.status(200).json({message:"Success"})
             }
-            const isValidPhone = await registrationSchema.findOne({teamLeaderPhone: teamLeaderPhone});
-            if(isValidPhone){
-                return res.status(400).json({message: "Phone already registered"});
+            else if(isValidPhone){
+                let transactions = isValidPhone.transactionId
+                transactions.push(transactionID)
+                let amt = isValidPhone.paidAmount + paidAmount 
+                await registrationSchema.findByIdAndUpdate(isValidPhone._id,{techexpert:techexpert,nontechexpert:nontechexpert, paidAmount: amt, transactionId: transactions})
+                return res.status(200).json({message:"Success"})
             }else{
                 let transactions = [];
                 transactions.push(transactionID)
