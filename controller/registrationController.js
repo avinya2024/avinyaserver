@@ -119,6 +119,7 @@ module.exports.registration = async(req,res,next)=>{
             const isValidEmail = await registrationSchema.findOne({teamLeaderEmail: teamLeaderEmail});
             const isValidEmail2 = await registrationSchema.findOne({member2Email: teamLeaderEmail});
             const isValidEmail3 = await registrationSchema.findOne({member3Email: teamLeaderEmail});
+            const isValidPhone = await registrationSchema.findOne({teamLeaderPhone: teamLeaderPhone});
             if(isValidEmail && teamLeaderEmail!=""){
                 let transactions = isValidEmail.transactionId
                 transactions.push(transactionID)
@@ -126,23 +127,26 @@ module.exports.registration = async(req,res,next)=>{
                 await registrationSchema.findByIdAndUpdate(isValidEmail._id,{techexpert:techexpert,nontechexpert:nontechexpert, paidAmount: amt, transactionId: transactions})
                 return res.status(200).json({message:"Success"})
             }
-            if(isValidEmail2 && teamLeaderEmail!=""){
+            else if(isValidEmail2 && teamLeaderEmail!=""){
                 let transactions = isValidEmail2.transactionId
                 transactions.push(transactionID)
                 let amt = isValidEmail2.paidAmount + paidAmount 
                 await registrationSchema.findByIdAndUpdate(isValidEmail2._id,{techexpert:techexpert,nontechexpert:nontechexpert, paidAmount: amt, transactionId: transactions})
                 return res.status(200).json({message:"Success"})
             }
-            if(isValidEmail3 && teamLeaderEmail!=""){
+            else if(isValidEmail3 && teamLeaderEmail!=""){
                 let transactions = isValidEmail3.transactionId
                 transactions.push(transactionID)
                 let amt = isValidEmail3.paidAmount + paidAmount 
                 await registrationSchema.findByIdAndUpdate(isValidEmail3._id,{techexpert:techexpert,nontechexpert:nontechexpert, paidAmount: amt, transactionId: transactions})
                 return res.status(200).json({message:"Success"})
             }
-            const isValidPhone = await registrationSchema.findOne({teamLeaderPhone: teamLeaderPhone});
-            if(isValidPhone){
-                return res.status(400).json({message: "Phone already registered"});
+            else if(isValidPhone){
+                let transactions = isValidPhone.transactionId
+                transactions.push(transactionID)
+                let amt = isValidPhone.paidAmount + paidAmount 
+                await registrationSchema.findByIdAndUpdate(isValidPhone._id,{techexpert:techexpert,nontechexpert:nontechexpert, paidAmount: amt, transactionId: transactions})
+                return res.status(200).json({message:"Success"})
             }else{
                 let transactions = []
                 transactions.push(transactionID)
