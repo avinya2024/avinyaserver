@@ -85,8 +85,6 @@ const registration = new mongoose.Schema({
         default: 0
     }
 },{
-    timestamps: {
-        currentTime: ()=>getISTTimestamp
-    }
+    timestamps: true
 });
 module.exports.registrationSchema = mongoose.model('registrations',registration)
