@@ -80,5 +80,7 @@ const registration = new mongoose.Schema({
         required: true,
         default: 0
     }
+},{
+    timestamps: true
 });
 module.exports.registrationSchema = mongoose.model('registrations',registration)
