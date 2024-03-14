@@ -16,20 +16,14 @@ app.use(cors({
 }));
 app.options('*', cors());
 app.use("/*", (req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://avinya2024.live'); // You can specify your allowed origin here
+    res.header('Access-Control-Allow-Origin', 'https://avinya2024.live');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Max-Age', '3600'); // Optional
+    res.header('Access-Control-Max-Age', '3600');
     next();
 });
-app.post('/api/orders', order);
 
-
-// Payment Verification Route
-app.post('/api/verification', verification);
-
-// ... other app routes and middleware
 app.post('/register', registration);
 app.put('/register', registration);
 app.patch('/register', registration);

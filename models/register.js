@@ -21,14 +21,12 @@ const registration = new mongoose.Schema({
     teamLeaderPhone:{
         type: String,
         required: true,
-        unique: true,
         min: 10,
         max: 10
     },
     teamLeaderEmail:{
         type: String,
         match: /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
-        unique: true,
         required: true
     },
     member2Name:{
@@ -83,6 +81,10 @@ const registration = new mongoose.Schema({
         type: Number,
         required: true,
         default: 0
+    },
+    screenshot: {
+        type: Array,
+        required: true // Assuming you will store the path to the screenshot file
     }
 },{
     timestamps: true
