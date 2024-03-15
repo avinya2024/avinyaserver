@@ -81,10 +81,6 @@ const registration = new mongoose.Schema({
         type: Number,
         required: true,
         default: 0
-    },
-    screenshot: {
-        type: Array,
-        required: true // Assuming you will store the path to the screenshot file
     }
 },{
     timestamps: true

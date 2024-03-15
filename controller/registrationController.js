@@ -55,7 +55,7 @@ const { registrationSchema } = require("../models/register");
 module.exports.registration = async (req, res, next) => {
     try {
         if (req.method === 'POST') {
-            const { teamName, teamMembers, teamLeaderName, teamLeaderPhone, teamLeaderEmail, member2Name, member2Email, member3Name, member3Email, department, college, transactionID, paidAmount, screenshot } = req.body;
+            const { teamName, teamMembers, teamLeaderName, teamLeaderPhone, teamLeaderEmail, member2Name, member2Email, member3Name, member3Email, department, college, transactionID, paidAmount } = req.body;
             const isValidEmail = await registrationSchema.findOne({ email: teamLeaderEmail });
             const isValidEmail2 = await registrationSchema.findOne({ member2Email: member2Email });
             const isValidEmail3 = await registrationSchema.findOne({ member3Email: member3Email });
@@ -95,9 +95,8 @@ module.exports.registration = async (req, res, next) => {
                 return res.status(200).json({ message: "Success" })
             } else {
                 let transactions = [];
-                let screenshots = [];
+
                 transactions.push(transactionID);
-                screenshots.push(screenshot);
                 console.log(transactions);
                 const data = await registrationSchema.create({
                     teamName: teamName,
@@ -114,13 +113,12 @@ module.exports.registration = async (req, res, next) => {
                     hackathon: true,
                     exhibition: true,
                     transactionId: transactions,
-                    paidAmount: paidAmount,
-                    screenshot: screenshots
+                    paidAmount: paidAmount
                 }).then(() => {
                     res.status(200).json({ message: "Created" })
                 }).catch((err) => {
                     console.log(err);
-                    res.status(400).json({ message: "Unable to create" })
+                    res.status(400).json({ message: "Unable to create", error: err })
                 })
             }
 
@@ -128,7 +126,7 @@ module.exports.registration = async (req, res, next) => {
         }
         else if (req.method === 'PUT') {
             console.log("Here");
-            const { teamLeaderName, teamLeaderPhone, teamLeaderEmail, department, college, techexpert, nontechexpert, transactionID, paidAmount, screenshot } = req.body;
+            const { teamLeaderName, teamLeaderPhone, teamLeaderEmail, department, college, techexpert, nontechexpert, transactionID, paidAmount } = req.body;
             const isValidEmail = await registrationSchema.findOne({ teamLeaderEmail: teamLeaderEmail });
             const isValidEmail2 = await registrationSchema.findOne({ member2Email: teamLeaderEmail });
             const isValidEmail3 = await registrationSchema.findOne({ member3Email: teamLeaderEmail });
@@ -163,10 +161,9 @@ module.exports.registration = async (req, res, next) => {
                     return res.status(200).json({ message: "Success" })
                 }
             } else {
+                console.log("Here5");
                 let transactions = []
                 transactions.push(transactionID);
-                let screenshots = [];
-                screenshots.push(screenshot)
                 await registrationSchema.create({
                     teamLeaderName: teamLeaderName,
                     teamLeaderEmail: teamLeaderEmail,
@@ -177,13 +174,13 @@ module.exports.registration = async (req, res, next) => {
                     techexpert: techexpert,
                     nontechexpert: nontechexpert,
                     transactionId: transactions,
-                    paidAmount: paidAmount,
-                    screenshot: screenshots
+                    paidAmount: paidAmount
 
                 }).then(() => {
+                    console.log("Here2");
                     res.status(200).json({ message: "Created" });
                 }).catch((err) => {
-                    res.status(400).json({ message: "Unable to create " + err })
+                    res.status(400).json({ message: "Unable to create ", error: err })
                 })
             }
         }
