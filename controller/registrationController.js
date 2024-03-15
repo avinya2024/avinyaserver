@@ -63,8 +63,6 @@ module.exports.registration = async (req, res, next) => {
             if (isValidEmail && teamLeaderEmail != "") {
                 let transactions = isValidEmail.transactionId
                 transactions.push(transactionID)
-                let screenshots = isValidEmail.screenshot;
-                screenshots.push(screenshot);
                 let amt = isValidEmail.paidAmount + paidAmount
                 await registrationSchema.findByIdAndUpdate(isValidEmail._id, { hackathon: true, member2Name: member2Name, member2Email: member2Email, member3Name: member3Name, member3Email: member3Email, paidAmount: amt, transactionId: transactions, screenshot: screenshots })
                 return res.status(200).json({ message: "Success" })
@@ -72,8 +70,6 @@ module.exports.registration = async (req, res, next) => {
             if (isValidEmail2 && member2Email != "") {
                 let transactions = isValidEmail2.transactionId
                 transactions.push(transactionID)
-                let screenshots = isValidEmail2.screenshot;
-                screenshots.push(screenshot);
                 let amt = isValidEmail2.paidAmount + paidAmount
                 await registrationSchema.findByIdAndUpdate(isValidEmail2._id, { hackathon: true, member2Name: member2Name, member2Email: member2Email, member3Name: member3Name, member3Email: member3Email, paidAmount: amt, transactionId: transactions, screenshot: screenshots })
                 return res.status(200).json({ message: "Success" })
@@ -81,8 +77,6 @@ module.exports.registration = async (req, res, next) => {
             if (isValidEmail3 && member3Email != "") {
                 let transactions = isValidEmail3.transactionId;
                 transactions.push(transactionID)
-                let screenshots = isValidEmail3.screenshot;
-                screenshots.push(screenshot);
                 let amt = isValidEmail3.paidAmount + paidAmount
                 await registrationSchema.findByIdAndUpdate(isValidEmail3._id, { hackathon: true, member2Name: member2Name, member2Email: member2Email, member3Name: member3Name, member3Email: member3Email, paidAmount: amt, transactionId: transactions, screenshot: screenshots })
                 return res.status(200).json({ message: "Success" })
@@ -95,7 +89,6 @@ module.exports.registration = async (req, res, next) => {
                 return res.status(200).json({ message: "Success" })
             } else {
                 let transactions = [];
-
                 transactions.push(transactionID);
                 console.log(transactions);
                 const data = await registrationSchema.create({
